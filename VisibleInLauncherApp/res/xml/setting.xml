@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<CheckBoxPreference
+		android:title="visible in launcher 1"
+		android:defaultValue="true"
+		android:key="visible_in_launcher_1" />
+	<CheckBoxPreference
+		android:title="visible in launcher 2"
+		android:defaultValue="true"
+		android:key="visible_in_launcher_2" />
+</PreferenceScreen>
