@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
 		browser.loadUrl("file:///android_asset/index.html");
 	}
 
-	private String[] MESSAGES = { "HogeHoge", "FugaFuga", "PiyoPiyo" };
+	private String[] MESSAGES = { "HogeHoge", "FugaFuga", "PiyoPiyo", "Foo", "Bar" };
 
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add("change message");
