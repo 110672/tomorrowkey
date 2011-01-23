@@ -67,7 +67,7 @@ public class VTextView extends View {
         for (int i = 1; i <= text.length(); i++) {
             newLine = false;
 
-            CharSettings setting = CharSettings.getSetting(s[i]);
+            CharSetting setting = CharSetting.getSetting(s[i]);
             if (setting == null) {
                 // 文字設定がない場合、そのまま描画
                 canvas.drawText(s[i], x, y, mPaint);
