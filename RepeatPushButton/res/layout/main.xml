@@ -5,7 +5,8 @@
 	android:gravity="center_vertical|center_horizontal"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-	<jp.tomorrowkey.android.repeatpushbutton.RepeatButton
+	<view
+		class="jp.tomorrowkey.android.repeatpushbutton.RepeatButton"
 		android:id="@+id/btnIncrement"
 		android:text="Increment"
 		android:layout_width="wrap_content"
@@ -16,7 +17,8 @@
 		android:textSize="32sp"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content" />
-	<jp.tomorrowkey.android.repeatpushbutton.RepeatButton
+	<view
+		class="jp.tomorrowkey.android.repeatpushbutton.RepeatButton"
 		android:id="@+id/btnDecrement"
 		android:text="Decrement"
 		android:layout_width="wrap_content"

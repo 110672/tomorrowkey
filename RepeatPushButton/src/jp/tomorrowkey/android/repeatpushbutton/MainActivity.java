@@ -1,14 +1,13 @@
 
 package jp.tomorrowkey.android.repeatpushbutton;
 
-import jp.tomorrowkey.android.repeatpushbutton.RepeatButton.OnRepeatClickListener;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements OnClickListener, OnRepeatClickListener {
+public class MainActivity extends Activity implements OnClickListener {
 
     private TextView txtNumber;
 
@@ -27,33 +26,21 @@ public class MainActivity extends Activity implements OnClickListener, OnRepeatC
         txtNumber.setText(String.valueOf(number));
         btnIncrement = (RepeatButton)findViewById(R.id.btnIncrement);
         btnIncrement.setOnClickListener(this);
-        btnIncrement.setOnRepeatClickListener(this);
         btnDecrement = (RepeatButton)findViewById(R.id.btnDecrement);
         btnDecrement.setOnClickListener(this);
-        btnDecrement.setOnRepeatClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnIncrement:
+            case R.id.btnIncrement: {
                 increment();
                 break;
-            case R.id.btnDecrement:
+            }
+            case R.id.btnDecrement: {
                 decrement();
                 break;
-        }
-    }
-
-    @Override
-    public void onRepeartClick(View v) {
-        switch (v.getId()) {
-            case R.id.btnIncrement:
-                increment();
-                break;
-            case R.id.btnDecrement:
-                decrement();
-                break;
+            }
         }
     }
 
