@@ -3,36 +3,61 @@ package jp.tomorrowkey.android.screenscroller;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Scroller;
-import android.widget.Toast;
 
 public class ViewScroller extends ViewGroup {
 
-    public static final String TAG = "Scroller";
+    public static final String TAG = "ViewScroller";
 
-    private static final int THRESHOLD = 100;
+    /**
+     * 加速度の閾値<br>
+     * この値を超える加速度でスクロールすると現在のスクロール具合に関係せず<br>
+     * ページスクロールする
+     */
+    private static final int VELOCITY_THRESHOLD = 100;
 
+    /**
+     * スクロールのリフレッシュレート
+     */
     private static final int REFRESH_INTERVAL = 10;
 
+    /**
+     * 表示するべきページ番号<br>
+     * 最大3ページだろうが5という値が入る場合がある<br>
+     * その時は2ページ目が表示される
+     */
     private int mPageIndex = 0;
 
+    /**
+     * 前回のタッチ位置<br>
+     * スクロールに仕様される
+     */
     private int mPrevX;
 
+    /**
+     * 画面の横幅
+     */
     private int mScreenWidth;
 
+    /**
+     * 画面の高さ
+     */
     private int mScreenHeight;
 
+    /**
+     * 加速度計算機
+     */
     private VelocityTracker mVelocityTracker;
 
+    /**
+     * スクロール計算機
+     */
     private Scroller mScroller;
-
-    private Toast mToast;
 
     public ViewScroller(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -40,8 +65,6 @@ public class ViewScroller extends ViewGroup {
         mVelocityTracker = VelocityTracker.obtain();
 
         mScroller = new Scroller(getContext(), new OvershootInterpolator());
-
-        mToast = Toast.makeText(getContext(), "", Toast.LENGTH_SHORT);
     }
 
     @Override
@@ -106,70 +129,36 @@ public class ViewScroller extends ViewGroup {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mPrevX = (int)event.getX();
-
                 mVelocityTracker.clear();
                 mVelocityTracker.addMovement(event);
                 break;
             case MotionEvent.ACTION_MOVE:
-
                 scrollBy((int)(mPrevX - event.getX()), 0);
                 mPrevX = (int)event.getX();
-
                 mVelocityTracker.addMovement(event);
                 break;
             case MotionEvent.ACTION_UP:
                 mVelocityTracker.computeCurrentVelocity(100);
                 float xVelocity = mVelocityTracker.getXVelocity();
 
-                int startX = getScrollX();
-                int dx = 0;
-                int direction = 1;
+                // 現在のスクロールピクセル数を取得する
+                int currentDiffX = (mPageIndex * mScreenWidth) - getScrollX();
 
-                Log.d(TAG, "xVelocity:" + xVelocity);
-
-                if (Math.abs(xVelocity) <= 0) {
-                    direction = -1;
+                // スクロールしている方向|加速度によって表示するページを変更する
+                if (currentDiffX < -(mScreenWidth * 0.75) || xVelocity < -VELOCITY_THRESHOLD) {
+                    // 右側に移動
+                    mPageIndex++;
+                } else if (currentDiffX > (mScreenWidth * 0.75) || xVelocity > VELOCITY_THRESHOLD) {
+                    // 左側に移動
+                    mPageIndex--;
                 }
 
-                // if (mPageIndex < 0) {
-                // xVelocity = -xVelocity;
-                // }
+                // 遷移するページへのXの差分を計算する
+                int moveScrollX = mPageIndex * mScreenWidth - getScrollX();
 
-                if (mPageIndex == 0) {
-                    if (xVelocity <= 0) {
-                        // zero right
-                        dx = mScreenWidth - (startX % mScreenWidth);
-                    } else if (xVelocity > 0) {
-                        // zero left
-                        dx = -(mScreenWidth + (startX % mScreenWidth));
-                    }
-                } else if (mPageIndex > 0) {
-                    if (xVelocity <= 0) {
-                        // plus right
-                        dx = mScreenWidth - (startX % mScreenWidth);
-                    } else if (xVelocity > 0) {
-                        // plus left
-                        dx = -(startX % mScreenWidth);
-                    }
-                } else if (mPageIndex < 0) {
-                    if (xVelocity >= 0) {
-                        // minus left
-                        dx = -(mScreenWidth + (startX % mScreenWidth));
-                    } else if (xVelocity < 0) {
-                        // minus right
-                        dx = -(startX % mScreenWidth);
-                    }
-                }
-
-                mScroller.startScroll(startX, 0, dx, 0, (int)(Math.abs(dx)));
-
-                int finalX = mScroller.getFinalX();
-                mPageIndex = finalX / mScreenWidth;
-
-                mToast.cancel();
-                mToast.setText(String.valueOf(mPageIndex));
-                mToast.show();
-
+                // スクロールを開始する
+                mScroller
+                        .startScroll(getScrollX(), 0, moveScrollX, 0, (int)(Math.abs(moveScrollX)));
                 post(mScrollerRunnable);
 
                 break;
@@ -193,5 +182,4 @@ public class ViewScroller extends ViewGroup {
             postDelayed(this, REFRESH_INTERVAL);
         }
     };
-
 }
