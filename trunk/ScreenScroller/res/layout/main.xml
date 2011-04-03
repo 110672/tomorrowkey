@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<view
+	class="jp.tomorrowkey.android.screenscroller.ViewScroller"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:screenscroller="http://schemas.android.com/apk/res/jp.tomorrowkey.android.screenscroller"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<view
+		class="jp.tomorrowkey.android.screenscroller.MyImageView"
+		android:src="@drawable/no1"
+		android:scaleType="center"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent" />
+	<view
+		class="jp.tomorrowkey.android.screenscroller.MyImageView"
+		android:src="@drawable/no2"
+		android:scaleType="center"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent" />
+	<view
+		class="jp.tomorrowkey.android.screenscroller.MyImageView"
+		android:src="@drawable/no3"
+		android:scaleType="center"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent" />
+</view>
