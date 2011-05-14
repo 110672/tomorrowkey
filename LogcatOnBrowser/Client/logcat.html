@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+var ws = null;
+var ip_address = "";
+var port_number = "";
+if (!("WebSocket" in window)) {
+     alert("WebSocket NOT supported by your Browser!");
+}
+
+function toggle_connection() {
+  if(ws == null){
+    connect();
+  } else {
+    disconnect();
+  }
+}
+
+function connect() {
+  if ("WebSocket" in window) {
+     ip_address = $("#ip_address").val();
+     port_number = $("#port_number").val();
+     ws = new WebSocket("ws://" + ip_address + ":" + port_number);
+     ws.onopen = function() {
+        $("#socket_status").html("status:connected/" + ip_address + ":" + port_number);
+        $("#toggle_connect_button").val("disconnect");
+     };
+     ws.onmessage = function (evt) { 
+        var received_msg = evt.data;
+        $("#logcat").append($("<p>").html(received_msg));
+        if($("#auto_scroll_checkbox").is(":checked")) {
+          window.scrollBy(0,document.height);
+        }
+     };
+     ws.onclose = function() { 
+        $("#socket_status").html("status:closed");
+        $("#toggle_connect_button").val("connect");
+        alert("closed");
+     };
+     ws.onerror = function() {
+        alert("error");
+     };
+  } else {
+     alert("WebSocket NOT supported by your Browser!");
+  }
+}
+
+function disconnect(){
+  if ("WebSocket" in window) {
+    if(ws != null) {
+      ws.close();
+      ws = null;
+    }
+  } else {
+     alert("WebSocket NOT supported by your Browser!");
+  }
+}
+
+function clear_logcat() {
+  $("#logcat").empty();
+}
+</script>
+</head>
+<body>
+<div style="position: fixed !important; position:absolute; top:0; left:0; width:100%; background-color:#00bfff; padding:5px">
+<div>
+ip address:<input type="text" id="ip_address" value="192.168.0.4" />
+port number:<input type="text" id="port_number" value="10007" />
+<input type="button" id="toggle_connect_button" value="connect" onclick="javascript:toggle_connection()" />
+<input type="button" value="clear logcat" onclick="javascript:clear_logcat()" />
+</div>
+<div><input type="checkbox" id="auto_scroll_checkbox" checked /><label for="auto_scroll_checkbox">auto scroll</label></div>
+<div id="socket_status">status:closed</div>
+</div>
+<div id="logcat"></div>
+</body>
+</html>
