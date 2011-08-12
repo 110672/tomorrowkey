@@ -146,7 +146,7 @@ public class ShakeListener implements SensorEventListener {
     public void registerListener(SensorManager sensorManager, OnShakeListener l, int rate,
             boolean isCallbackAlways) {
         if (l == null)
-            throw new RuntimeException("OnShakeListener is required");
+            throw new IllegalArgumentException("OnShakeListener is required");
 
         mOnShakeListener = l;
         mIsCallbackAlways = isCallbackAlways;
