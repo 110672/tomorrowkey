@@ -1,7 +1,6 @@
 
 package jp.tomorrowkey.android.shakelistener;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 
 import android.hardware.Sensor;
@@ -198,7 +197,7 @@ public class ShakeListener implements SensorEventListener {
         mAccelerometerSamplingSums[0] += event.values[SensorManager.DATA_X];
         mAccelerometerSamplingSums[1] += event.values[SensorManager.DATA_Y];
         mAccelerometerSamplingSums[2] += event.values[SensorManager.DATA_Z];
-        mAccelerometerList.add(Arrays.copyOf(event.values, event.values.length));
+        mAccelerometerList.add(event.values.clone());
         if (mAccelerometerList.size() > SAMPLING_SIZE) {
             float[] removedValues = mAccelerometerList.removeFirst();
             mAccelerometerSamplingSums[0] -= removedValues[SensorManager.DATA_X];
