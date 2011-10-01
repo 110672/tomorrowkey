@@ -1,17 +1,16 @@
 
-package jp.tomorrowkey.android.logcatsocketserver;
+package jp.tomorrowkey.android.logcatsocketserver.thread;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import jp.tomorrowkey.android.logcatsocketserver.logcatsocket.LogcatSocket;
 import android.util.Log;
 
 /**
@@ -23,10 +22,16 @@ public class ReadLogcatThread extends Thread {
 
     public static final String LOG_TAG = ReadLogcatThread.class.getSimpleName();
 
-    private List<Socket> mSocketList;
+    /**
+     * ソケットを保持するリスト
+     */
+    private List<LogcatSocket> mSocketList;
 
+    /**
+     * コンストラクタ
+     */
     public ReadLogcatThread() {
-        mSocketList = Collections.synchronizedList(new LinkedList<Socket>());
+        mSocketList = Collections.synchronizedList(new LinkedList<LogcatSocket>());
     }
 
     @Override
@@ -39,13 +44,10 @@ public class ReadLogcatThread extends Thread {
             while ((line = in.readLine()) != null) {
                 int i = 0;
                 while (i < mSocketList.size()) {
-                    Socket socket = mSocketList.get(i);
+                    LogcatSocket socket = mSocketList.get(i);
                     if (!socket.isClosed()) {
                         try {
-                            OutputStream os = socket.getOutputStream();
-                            os.write(0x00);
-                            os.write(line.getBytes());
-                            os.write(0xff);
+                            socket.write(line.getBytes());
                         } catch (SocketException e) {
                             Log.w(LOG_TAG, "SocketException", e);
                             mSocketList.remove(socket);
@@ -67,7 +69,7 @@ public class ReadLogcatThread extends Thread {
      * 
      * @param socket
      */
-    public void addSocket(Socket socket) {
+    public void addSocket(LogcatSocket socket) {
         mSocketList.add(socket);
     }
 
@@ -75,7 +77,7 @@ public class ReadLogcatThread extends Thread {
      * すべてのソケットを切断する
      */
     public void closeAllSocket() {
-        for (Socket socket : mSocketList) {
+        for (LogcatSocket socket : mSocketList) {
             try {
                 socket.close();
             } catch (IOException e) {

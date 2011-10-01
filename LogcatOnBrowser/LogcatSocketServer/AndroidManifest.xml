@@ -3,30 +3,27 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="jp.tomorrowkey.android.logcatsocketserver"
 	android:versionCode="1"
-	android:versionName="1.0">
-	<uses-sdk
-		android:minSdkVersion="7" />
-	<uses-permission
-		android:name="android.permission.ACCESS_WIFI_STATE" />
-	<uses-permission
-		android:name="android.permission.INTERNET" />
-	<uses-permission
-		android:name="android.permission.READ_LOGS" />
+	android:versionName="2.0.0">
+	<uses-sdk android:minSdkVersion="7" />
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.READ_LOGS" />
 	<application
 		android:icon="@drawable/icon"
-		android:label="@string/app_name">
+		android:label="@string/app_name"
+		android:debuggable="true">
 		<activity
-			android:name=".MainActivity"
-			android:label="@string/app_name">
+			android:name=".HomeActivity"
+			android:label="@string/app_name"
+			android:launchMode="singleTask">
 			<intent-filter>
-				<action
-					android:name="android.intent.action.MAIN" />
-				<category
-					android:name="android.intent.category.LAUNCHER" />
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+				<category android:name="android.intent.category.DEFAULT" />
 			</intent-filter>
 		</activity>
-		<service
-			android:name=".LogcatSocketService">
+		<service android:name=".LogcatSocketService">
 		</service>
 	</application>
 </manifest>

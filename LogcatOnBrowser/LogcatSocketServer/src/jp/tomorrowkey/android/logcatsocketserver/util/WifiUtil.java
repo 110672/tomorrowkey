@@ -1,7 +1,8 @@
 
-package jp.tomorrowkey.android.logcatsocketserver;
+package jp.tomorrowkey.android.logcatsocketserver.util;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
@@ -20,6 +21,17 @@ public class WifiUtil {
      */
     public static final boolean isEnabled(Context context) {
         return ((WifiManager)context.getSystemService(Context.WIFI_SERVICE)).isWifiEnabled();
+    }
+
+    /**
+     * Wi-Fi接続が有効になっているか判定する
+     * 
+     * @param context
+     * @return
+     */
+    public static final boolean isEnabledWifiConnection(Context context) {
+        return ((ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE))
+                .getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_WIFI;
     }
 
     /**
