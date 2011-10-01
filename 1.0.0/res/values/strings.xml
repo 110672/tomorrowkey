@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LogcatSocketServer</string>
+    <string name="start_server">start server</string>
+    <string name="stop_server">stop server</string>
+</resources>
