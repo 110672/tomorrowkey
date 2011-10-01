@@ -1,12 +1,12 @@
 
-package jp.tomorrowkey.android.logcatsocketserver;
+package jp.tomorrowkey.android.logcatsocketserver.logcatsocket;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.ServerSocket;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -18,13 +18,13 @@ import java.util.Map;
 import android.util.Log;
 
 /**
- * Socket接続を待つスレッド
+ * WebSocketの処理を受け持つ
  * 
  * @author tomorrowkey@gmail.com
  */
-public class SocketServerThread extends Thread {
+public class WebLogcatSocket extends LogcatSocket {
 
-    public static final String LOG_TAG = SocketServerThread.class.getSimpleName();
+    public static final String LOG_TAG = WebLogcatSocket.class.getSimpleName();
 
     private static final String CR = "\r";
 
@@ -32,47 +32,27 @@ public class SocketServerThread extends Thread {
 
     private static final String CRLF = CR + LF;
 
-    /**
-     * サーバ待ち受けポート番号
-     */
-    private int mPortNum = 10007;
-
-    /**
-     * サーバソケット
-     */
-    private ServerSocket mServerSocket;
-
-    /**
-     * 新しい接続がきた時のコールバック
-     */
-    private OnNewConnectionListener mOnNewConnectionListener;
-
-    public SocketServerThread(int portNum, OnNewConnectionListener l) {
-        if (l == null) {
-            throw new IllegalArgumentException();
+    public WebLogcatSocket(Socket socket) throws NoSuchAlgorithmException, IOException {
+        super(socket);
+        try {
+            handshake();
+        } catch (Exception e) {
+            Log.w(LOG_TAG, e.getClass().getSimpleName(), e);
+            close();
         }
-        mPortNum = portNum;
-        mOnNewConnectionListener = l;
     }
 
     @Override
-    public void run() {
-        try {
-            mServerSocket = new ServerSocket(mPortNum);
-            while (true) {
-                Socket socket = mServerSocket.accept();
-                try {
-                    handshake(socket);
-                    mOnNewConnectionListener.onNewConnection(socket);
-                } catch (IOException e) {
-                    Log.w(LOG_TAG, "IOException", e);
-                } catch (NoSuchAlgorithmException e) {
-                    Log.w(LOG_TAG, "NoSuchAlgorithmException", e);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void write(byte[] buffer) throws IOException {
+        OutputStream os = mSocket.getOutputStream();
+        os.write(0x00);
+        os.write(buffer);
+        os.write(0xff);
+    }
+
+    @Override
+    public SocketType getSocketType() {
+        return SocketType.WEB_SOCKET;
     }
 
     /**
@@ -82,10 +62,10 @@ public class SocketServerThread extends Thread {
      * @throws IOException
      * @throws NoSuchAlgorithmException
      */
-    private void handshake(Socket socket) throws IOException, NoSuchAlgorithmException {
-        DataInputStream dis = new DataInputStream(new BufferedInputStream(socket.getInputStream(),
+    private void handshake() throws IOException, NoSuchAlgorithmException {
+        DataInputStream dis = new DataInputStream(new BufferedInputStream(mSocket.getInputStream(),
                 256));
-        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream(), 256);
+        BufferedOutputStream bos = new BufferedOutputStream(mSocket.getOutputStream(), 256);
 
         // HTTPメソッドの取得
         String httpMethod = readUntil(dis, CRLF);
@@ -134,8 +114,8 @@ public class SocketServerThread extends Thread {
 
         responseHeader.append("Sec-WebSocket-Origin: ").append(headerMap.get("Origin"))
                 .append(CRLF);
-        responseHeader.append("Sec-WebSocket-Location: ").append("ws://").append(
-                headerMap.get("Host")).append(requestPath).append(CRLF);
+        responseHeader.append("Sec-WebSocket-Location: ").append("ws://")
+                .append(headerMap.get("Host")).append(requestPath).append(CRLF);
 
         bos.write(responseHeader.toString().getBytes());
         bos.write(CRLF.getBytes());
@@ -182,25 +162,5 @@ public class SocketServerThread extends Thread {
         } else {
             return buffer.substring(0, buffer.length() - endWithTextLength);
         }
-    }
-
-    /**
-     * ソケットサーバを停止する
-     */
-    public void stopServer() {
-        if (mServerSocket != null && !mServerSocket.isClosed()) {
-            try {
-                mServerSocket.close();
-            } catch (IOException e) {
-                Log.w(LOG_TAG, "IOException", e);
-            }
-        }
-    }
-
-    /**
-     * 新しいソケット接続が開始された時に呼ばれるコールバック
-     */
-    public interface OnNewConnectionListener {
-        void onNewConnection(Socket socket);
     }
 }
