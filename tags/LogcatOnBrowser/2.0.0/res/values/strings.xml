@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LogcatSocketServer</string>
+    <string name="websocket">WebSocket</string>
+    <string name="socket">Socket</string>
+    <string name="start_server">start server</string>
+    <string name="stop_server">stop server</string>
+    <string name="please_enable_your_wifi">please enable your Wi-Fi</string>
+    <string name="please_connect_wifi">plase connect Wi-Fi</string>
+</resources>
