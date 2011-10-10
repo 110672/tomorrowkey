@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -68,6 +69,12 @@ public class CustomView extends View {
         FontMetrics fontMetrics = mTextPaint.getFontMetrics();
         mTextHeight = fontMetrics.bottom - fontMetrics.top;
         mTextWidth = mTextPaint.measureText(TEXT);
+        
+        Log.d(LOG_TAG,"top:" + fontMetrics.top);
+        Log.d(LOG_TAG,"ascent:" + fontMetrics.ascent);
+        Log.d(LOG_TAG,"leading:" + fontMetrics.leading);
+        Log.d(LOG_TAG,"descent:" + fontMetrics.descent);
+        Log.d(LOG_TAG,"bottom:" + fontMetrics.bottom);
     }
 
     @Override
